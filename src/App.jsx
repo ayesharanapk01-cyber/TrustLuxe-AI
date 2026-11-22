@@ -1,71 +1,3 @@
-import { useState, useEffect } from 'react';
-import './App.css';
-import Settings from './Settings';
-import WebsiteScanner from './WebsiteScanner';
-import RiskAssessment from './RiskAssessment';
-
-function AITrustModule() {
-  const [website, setWebsite] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [result, setResult] = useState(null);
-
-  const analyzeWebsite = async () => {
-    if (!website.trim()) {
-      alert('Please enter a website URL');
-      return;
-    }
-    setLoading(true);
-    setResult(null);
-    try {
-      const response = await fetch('/api/ai-trust', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ website }),
-      });
-      const data = await response.json();
-      if (response.ok) setResult(data);
-    } catch (error) {
-      alert('Backend server se connect nahi ho saka.');
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  return (
-    <div className="settings-page">
-      <div className="settings-header">
-        <p className="eyebrow">INTELLIGENCE MODULE</p>
-        <h1>AI Trust Analysis</h1>
-        <p>Evaluate website trust indicators and security information.</p>
-      </div>
-      <div className="settings-card">
-        <h3>Website Analysis</h3>
-        <p>Enter a website URL to begin your analysis.</p>
-        <input
-          type="url"
-          placeholder="https://example.com"
-          value={website}
-          onChange={(e) => { setWebsite(e.target.value); setResult(null); }}
-        />
-        <button onClick={analyzeWebsite} disabled={loading}>
-          {loading ? 'Analyzing with AI...' : 'Analyze Website →'}
-        </button>
-        {result && (
-          <div style={{ marginTop: '25px' }}>
-            <h3>AI Intelligence Report</h3>
-            <p>Target: {result.website}</p>
-            <div className="stats" style={{ marginTop: '15px' }}>
-              <div className="stat-card"><p>AI Trust Score</p><h2>{result.trustScore}</h2></div>
-              <div className="stat-card"><p>Verdict</p><h2 style={{ color: '#2ecc71' }}>{result.verdict}</h2></div>
-              <div className="stat-card"><p>SSL Encryption</p><h2>{result.sslVerified}</h2></div>
-            </div>
-            <p style={{ marginTop: '20px', color: '#2ecc71' }}>✓ {result.status}</p>
-          </div>
-        )}
-      </div>
-    </div>
-  );
-}
 function App() {
   const [active, setActive] = useState('Dashboard');
   const [website, setWebsite] = useState('');
@@ -113,7 +45,7 @@ function App() {
   return (
     <div className="app">
       <aside className="sidebar">
-        <div className="brand">
+        <div className="brand" style={{ cursor: 'pointer' }} onClick={() => setActive('Dashboard')}>
           <div className="brand-icon">T</div>
           <div><h2>TrustLuxe<span> AI</span></h2><small>INTELLIGENCE PLATFORM</small></div>
         </div>
@@ -127,7 +59,10 @@ function App() {
         </nav>
         <div className="sidebar-bottom">
           <div className="security-status"><span className="status-dot"></span>SYSTEM PROTECTED<p>AI engine ready</p></div>
-          <div className="profile"><div className="avatar">H</div><div><strong>Administrator</strong><small>Premium Account</small></div></div>
+          <div className="profile" style={{ cursor: 'pointer' }} onClick={() => setActive('Settings')} title="Account Settings">
+            <div className="avatar">H</div>
+            <div><strong>Administrator</strong><small>Premium Account</small></div>
+          </div>
         </div>
       </aside>
       <main className="main">
@@ -156,7 +91,11 @@ function App() {
           <>
             <header className="topbar">
               <div><span className="breadcrumb">Workspace / </span><strong>{active}</strong></div>
-              <div className="top-actions"><span className="online"><i></i> AI Online</span><button className="notification">♧</button><div className="avatar">H</div></div>
+              <div className="top-actions">
+                <span className="online"><i></i> AI Online</span>
+                <button className="notification" onClick={() => setActive('Reports')} title="View Reports">♧</button>
+                <div className="avatar" style={{ cursor: 'pointer' }} onClick={() => setActive('Settings')} title="Account Settings">H</div>
+              </div>
             </header>
             <section className="content">
               <div className="welcome">
@@ -206,4 +145,3 @@ function App() {
 }
 
 export default App;
-
